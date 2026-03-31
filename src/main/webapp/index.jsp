@@ -38,7 +38,7 @@
                     <div class="carousel-item active hero-slide"
                         style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');">
                         <div class="carousel-caption d-flex flex-column justify-content-center h-100">
-                            <h1 class="display-3 fw-bold mb-3 animate-up">Welcome to Modern University Portal</h1>
+                            <h1 class="display-3 fw-bold mb-3 animate-up">Welcome to Student Portal</h1>
                             <p class="lead mb-4 opacity-75 animate-up delay-1">Your academic journey, beautifully
                                 streamlined.</p>
                             <div class="animate-up delay-2">

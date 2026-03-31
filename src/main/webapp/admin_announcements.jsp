@@ -3,38 +3,32 @@
         <%@ page import="com.student.dao.*" %>
             <%@ page import="java.util.List" %>
                 <% User user=(User) session.getAttribute("user"); if (user==null || !"admin".equals(user.getRole())) {
-                    response.sendRedirect("admin_login.jsp"); return; } String msg="" ; String msgType="" ; if
-                    ("POST".equalsIgnoreCase(request.getMethod())) { String title=request.getParameter("title"); String
-                    content=request.getParameter("content"); String previewUrl=request.getParameter("preview_url");
-                    
-                    if(title !=null && content !=null && !title.isEmpty() && !content.isEmpty()) { 
-                    
-                        // VULNERABILITY: Server-Side Request Forgery (SSRF)
-                        // The server blindly fetches the URL provided by the user without any validation.
-                        if (previewUrl != null && !previewUrl.trim().isEmpty()) {
-                            try {
-                                java.net.URL url = new java.net.URL(previewUrl);
-                                java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
-                                conn.setRequestMethod("GET");
-                                conn.setConnectTimeout(3000); // Prevent hanging forever
-                                java.io.BufferedReader in = new java.io.BufferedReader(new java.io.InputStreamReader(conn.getInputStream()));
-                                String inputLine;
-                                StringBuilder fetchResult = new StringBuilder();
-                                int lines = 0;
-                                while ((inputLine = in.readLine()) != null && lines < 20) { // Read top 20 lines
-                                    fetchResult.append(inputLine).append("\n");
-                                    lines++;
-                                }
-                                in.close();
-                                
-                                // Clean up basic HTML tags just so it doesn't break our formatting too badly, but leave the raw text
-                                String safePreview = fetchResult.toString().replace("<", "&lt;").replace(">", "&gt;");
-                                content += "<br><br><div class='alert alert-secondary'><strong>Link Preview (" + previewUrl + "):</strong><pre class='mt-2 mb-0' style='white-space: pre-wrap; font-size: 0.8rem;'>" + safePreview + "</pre></div>";
-                            } catch (Exception e) {
-                                content += "<br><br><div class='alert alert-danger'><strong>Link Preview Failed:</strong> " + e.getMessage() + "</div>";
-                            }
-                        }
-                    
+                    response.sendRedirect("admin_login.jsp"); return; } String msg=request.getParameter("msg") !=null ?
+                    request.getParameter("msg") : "" ; String msgType=request.getParameter("error") !=null ? "danger"
+                    : "success" ; if ("POST".equalsIgnoreCase(request.getMethod())) { String
+                    title=request.getParameter("title"); String content=request.getParameter("content"); String
+                    previewUrl=request.getParameter("preview_url"); if(title !=null && content !=null &&
+                    !title.isEmpty() && !content.isEmpty()) { // VULNERABILITY: Server-Side Request Forgery (SSRF) //
+                    The server blindly fetches the URL provided by the user without any validation. if (previewUrl
+                    !=null && !previewUrl.trim().isEmpty()) { try { java.net.URL url=new java.net.URL(previewUrl);
+                    java.net.URLConnection conn=url.openConnection(); conn.setConnectTimeout(3000); // Prevent hanging
+                    forever java.io.BufferedReader in=new java.io.BufferedReader(new
+                    java.io.InputStreamReader(conn.getInputStream())); String inputLine; StringBuilder fetchResult=new
+                    StringBuilder(); int lines=0; while ((inputLine=in.readLine()) !=null && lines < 20) { // Read top
+                    20 lines fetchResult.append(inputLine).append("\n"); lines++; } in.close(); // Clean up basic HTML
+                    tags just so it doesn't break our formatting too badly, but leave the raw text String
+                    safePreview=fetchResult.toString().replace("<", "&lt;" ).replace(">", "&gt;");
+                    content += "<br><br>
+                    <div class='alert alert-secondary'><strong>Link Preview (" + previewUrl + "):</strong>
+                        <pre class='mt-2 mb-0'
+                            style='white-space: pre-wrap; font-size: 0.8rem;'>" + safePreview + "</pre>
+                    </div>";
+                    } catch (Exception e) {
+                    content += "<br><br>
+                    <div class='alert alert-danger'><strong>Link Preview Failed:</strong> " + e.getMessage() + "</div>";
+                    }
+                    }
+
                     Announcement announcement=new Announcement(); announcement.setTitle(title); /*
                     VULNERABILITY: Stored XSS - content is saved exactly as inputted */
                     announcement.setContent(content); AnnouncementDAO dao=new AnnouncementDAO();
@@ -79,7 +73,7 @@
                                                             </div>
                                                             <div class="mb-3">
                                                                 <label for="content" class="form-label">Announcement
-                                                                    Content (HTML allowed)</label>
+                                                                    Content</label>
                                                                 <!-- VULNERABILITY: Explicitly allowing HTML encourages users to input scripts -->
                                                                 <textarea class="form-control" id="content"
                                                                     name="content" rows="4" required></textarea>
@@ -87,10 +81,12 @@
                                                                     &lt;b&gt;, &lt;i&gt;, or links here.</div>
                                                             </div>
                                                             <div class="mb-3">
-                                                                <label for="preview_url" class="form-label">Attach Link Preview (Optional)</label>
+                                                                <label for="preview_url" class="form-label">Attach Link
+                                                                    Preview (Optional)</label>
                                                                 <input type="text" class="form-control" id="preview_url"
                                                                     name="preview_url" placeholder="http://example.com">
-                                                                <div class="form-text">Enter a URL to fetch a summary.</div>
+                                                                <div class="form-text">Enter a URL to fetch a summary.
+                                                                </div>
                                                             </div>
                                                             <button type="submit" class="btn btn-primary">Post
                                                                 Announcement</button>
@@ -107,14 +103,20 @@
                                                     <div
                                                         class="card mt-3 shadow-sm border-start border-primary border-4">
                                                         <div class="card-body">
-                                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                            <div
+                                                                class="d-flex justify-content-between align-items-center mb-2">
                                                                 <h5 class="card-title text-primary mb-0">
                                                                     <%= a.getTitle() %>
                                                                 </h5>
                                                                 <div>
-                                                                    <a href="admin_edit_announcement.jsp?id=<%= a.getId() %>" class="btn btn-sm btn-outline-warning me-2"><i class="fas fa-edit"></i> Edit</a>
+                                                                    <a href="admin_edit_announcement.jsp?id=<%= a.getId() %>"
+                                                                        class="btn btn-sm btn-outline-warning me-2"><i
+                                                                            class="fas fa-edit"></i> Edit</a>
                                                                     <!-- VULNERABILITY: Delete is a GET request causing easy CSRF -->
-                                                                    <a href="admin?action=delete_announcement&id=<%= a.getId() %>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this announcement?');"><i class="fas fa-trash"></i> Delete</a>
+                                                                    <a href="admin?action=delete_announcement&id=<%= a.getId() %>"
+                                                                        class="btn btn-sm btn-outline-danger"
+                                                                        onclick="return confirm('Delete this announcement?');"><i
+                                                                            class="fas fa-trash"></i> Delete</a>
                                                                 </div>
                                                             </div>
                                                             <h6 class="card-subtitle mb-3 text-muted">

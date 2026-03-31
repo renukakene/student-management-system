@@ -48,7 +48,7 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label for="content" class="form-label">Announcement Content (HTML allowed)</label>
+                            <label for="content" class="form-label">Announcement Content</label>
                             <textarea class="form-control" id="content" name="content" rows="6" required><%= announcement.getContent() %></textarea>
                         </div>
                         

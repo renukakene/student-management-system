@@ -34,12 +34,12 @@ public class AnnouncementDAO {
     public boolean addAnnouncement(Announcement announcement) {
         try {
             Connection conn = DBConnection.getConnection();
-            Statement stmt = conn.createStatement();
             // VULNERABILITY: Stored XSS - content is saved exactly as inputted
-            // (There is also a SQL Injection vulnerability here due to string concatenation)
-            String sql = "INSERT INTO announcements (title, content) VALUES ('" 
-                + announcement.getTitle() + "', '" + announcement.getContent() + "')";
-            stmt.executeUpdate(sql);
+            String sql = "INSERT INTO announcements (title, content) VALUES (?, ?)";
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, announcement.getTitle());
+            pstmt.setString(2, announcement.getContent());
+            pstmt.executeUpdate();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,11 +70,12 @@ public class AnnouncementDAO {
     public boolean updateAnnouncement(Announcement announcement) {
         try {
             Connection conn = DBConnection.getConnection();
-            Statement stmt = conn.createStatement();
-            String sql = "UPDATE announcements SET title='" + announcement.getTitle() 
-                + "', content='" + announcement.getContent() 
-                + "' WHERE id=" + announcement.getId();
-            stmt.executeUpdate(sql);
+            String sql = "UPDATE announcements SET title=?, content=? WHERE id=?";
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, announcement.getTitle());
+            pstmt.setString(2, announcement.getContent());
+            pstmt.setInt(3, announcement.getId());
+            pstmt.executeUpdate();
             return true;
         } catch (Exception e) {
             e.printStackTrace();

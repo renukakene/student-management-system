@@ -4,7 +4,8 @@
 
             <% User user=(User) session.getAttribute("user"); if(user==null || !"admin".equals(user.getRole())) {
                 response.sendRedirect("login.jsp"); return; } StudentDAO dao=new StudentDAO(); String
-                query=request.getParameter("search"); String division=request.getParameter("division"); List<Student> students;
+                query=request.getParameter("search"); String division=request.getParameter("division"); List<Student>
+                students;
                 if(query != null && !query.isEmpty()) {
                 students = dao.searchStudents(query);
                 } else if (division != null && !division.isEmpty()) {
@@ -33,11 +34,11 @@
                                 <div
                                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                                     <h1 class="h2">
-                                        <% if (division != null && !division.isEmpty()) { %>
+                                        <% if (division !=null && !division.isEmpty()) { %>
                                             Division <%= division %> Students
-                                        <% } else { %>
-                                            Student Management
-                                        <% } %>
+                                                <% } else { %>
+                                                    Student Management
+                                                    <% } %>
                                     </h1>
                                     <div class="btn-toolbar mb-2 mb-md-0">
                                         <a href="admin_add_student.jsp" class="btn btn-sm btn-outline-primary">

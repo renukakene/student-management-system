@@ -6,7 +6,7 @@
                 <div class="card card-glass login-container">
                     <div class="card-header bg-transparent text-center border-0 pt-4">
                         <i class="fas fa-university fa-3x text-primary mb-3"></i>
-                        <h4 class="text-primary fw-bold">University Portal</h4>
+                        <h4 class="text-primary fw-bold">Student Portal</h4>
                         <p class="text-muted small">Login to access your dashboard</p>
                     </div>
                     <div class="card-body p-4 pt-2">
