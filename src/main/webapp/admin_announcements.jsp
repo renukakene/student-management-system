@@ -5,36 +5,27 @@
                 <% User user=(User) session.getAttribute("user"); if (user==null || !"admin".equals(user.getRole())) {
                     response.sendRedirect("admin_login.jsp"); return; } String msg=request.getParameter("msg") !=null ?
                     request.getParameter("msg") : "" ; String msgType=request.getParameter("error") !=null ? "danger"
-                    : "success" ; if ("POST".equalsIgnoreCase(request.getMethod())) { String
-                    title=request.getParameter("title"); String content=request.getParameter("content"); String
-                    previewUrl=request.getParameter("preview_url"); if(title !=null && content !=null &&
-                    !title.isEmpty() && !content.isEmpty()) { // VULNERABILITY: Server-Side Request Forgery (SSRF) //
-                    The server blindly fetches the URL provided by the user without any validation. if (previewUrl
-                    !=null && !previewUrl.trim().isEmpty()) { try { java.net.URL url=new java.net.URL(previewUrl);
-                    java.net.URLConnection conn=url.openConnection(); conn.setConnectTimeout(3000); // Prevent hanging
-                    forever java.io.BufferedReader in=new java.io.BufferedReader(new
-                    java.io.InputStreamReader(conn.getInputStream())); String inputLine; StringBuilder fetchResult=new
-                    StringBuilder(); int lines=0; while ((inputLine=in.readLine()) !=null && lines < 20) { // Read top
-                    20 lines fetchResult.append(inputLine).append("\n"); lines++; } in.close(); // Clean up basic HTML
-                    tags just so it doesn't break our formatting too badly, but leave the raw text String
-                    safePreview=fetchResult.toString().replace("<", "&lt;" ).replace(">", "&gt;");
-                    content += "<br><br>
-                    <div class='alert alert-secondary'><strong>Link Preview (" + previewUrl + "):</strong>
-                        <pre class='mt-2 mb-0'
-                            style='white-space: pre-wrap; font-size: 0.8rem;'>" + safePreview + "</pre>
-                    </div>";
-                    } catch (Exception e) {
-                    content += "<br><br>
-                    <div class='alert alert-danger'><strong>Link Preview Failed:</strong> " + e.getMessage() + "</div>";
-                    }
-                    }
-
-                    Announcement announcement=new Announcement(); announcement.setTitle(title); /*
-                    VULNERABILITY: Stored XSS - content is saved exactly as inputted */
-                    announcement.setContent(content); AnnouncementDAO dao=new AnnouncementDAO();
-                    if(dao.addAnnouncement(announcement)) { msg="Announcement posted successfully!" ; msgType="success"
-                    ; } else { msg="Failed to post announcement." ; msgType="danger" ; } } else {
-                    msg="Title and Content are required." ; msgType="warning" ; } } %>
+                    : "success" ; if ("POST".equalsIgnoreCase(request.getMethod())) { 
+                        String title=request.getParameter("title"); 
+                        String content=request.getParameter("content"); 
+                        if(title !=null && content !=null && !title.isEmpty() && !content.isEmpty()) { 
+                            Announcement announcement=new Announcement(); 
+                            announcement.setTitle(title); 
+                            /* VULNERABILITY: Stored XSS - content is saved exactly as inputted */
+                            announcement.setContent(content); 
+                            AnnouncementDAO dao=new AnnouncementDAO();
+                            if(dao.addAnnouncement(announcement)) { 
+                                msg="Announcement posted successfully!"; 
+                                msgType="success";
+                            } else { 
+                                msg="Failed to post announcement."; 
+                                msgType="danger"; 
+                            } 
+                        } else {
+                            msg="Title and Content are required."; 
+                            msgType="warning"; 
+                        } 
+                    } %>
 
                     <%@ include file="includes/header.jsp" %>
                         <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
@@ -80,14 +71,8 @@
                                                                 <div class="form-text">You can use basic HTML tags like
                                                                     &lt;b&gt;, &lt;i&gt;, or links here.</div>
                                                             </div>
-                                                            <div class="mb-3">
-                                                                <label for="preview_url" class="form-label">Attach Link
-                                                                    Preview (Optional)</label>
-                                                                <input type="text" class="form-control" id="preview_url"
-                                                                    name="preview_url" placeholder="http://example.com">
-                                                                <div class="form-text">Enter a URL to fetch a summary.
-                                                                </div>
-                                                            </div>
+
+
                                                             <button type="submit" class="btn btn-primary">Post
                                                                 Announcement</button>
                                                         </form>

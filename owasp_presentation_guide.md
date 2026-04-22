@@ -256,4 +256,4 @@ Trick the Admin into visiting a malicious webpage, which will silently force the
 7. **The Result:** Go back to the Admin Announcements page and refresh. Announcement #4 has been silently deleted!
 
 **Why it works:**
-The server cannot distinguish between a legitimate request made by the Admin clicking the "Delete" button, and a forged request made automatically by a malicious script/image tag on a different website. Because the session cookie is sent automatically, the server assumes the Admin authorized the deletion.y.
+The server cannot distinguish between a legitimate request made by the Admin clicking the "Delete" button, and a forged request made automatically by a malicious script/image tag on a different website. Because the session cookie is sent automatically, the server assumes the Admin authorized the deletion.
